@@ -10,8 +10,7 @@ song_queue = asyncio.Queue()
 
 
 class music(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self):
         self.songs = asyncio.Queue()
         self.next = asyncio.Event()
         self.channel = None
@@ -103,4 +102,4 @@ class music(commands.Cog):
         print("isLooped is ", self.is_looped)
 
     async def setup(client):
-        await client.add_cog(music(client))
+        await client.add_cog(music())
