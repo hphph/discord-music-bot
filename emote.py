@@ -42,5 +42,12 @@ class emote(commands.Cog):
         else:
             await ctx.send("Tag pusty  <:Mikizoltamorda:912046984876146730>")
 
+    @commands.command()
+    async def rasizm(self, ctx):
+        rasizm_moments = self.redis.get("rasizm:times")
+        rasizm_moments = int(rasizm_moments) + 1
+        await ctx.send("Na serwerze wypowiedziano " + str(rasizm_moments) + " razy coś rasistowskiego.")
+        self.redis.set("rasizm:times", rasizm_moments)
+
     async def setup(client):
         await client.add_cog(emote())
