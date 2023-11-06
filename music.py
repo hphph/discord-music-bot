@@ -1,18 +1,19 @@
 from asyncio.queues import Queue
-import discord
-import asyncio
+from asyncio import Event
+from asyncio import sleep as async_sleep
 from discord.ext import commands
 from discord.ext import tasks
-import yt_dlp
+from discord import FFmpegPCMAudio
+from yt_dlp import YoutubeDL
 import song
 
-song_queue = asyncio.Queue()
+song_queue = Queue()
 
 
 class music(commands.Cog):
     def __init__(self):
-        self.songs = asyncio.Queue()
-        self.next = asyncio.Event()
+        self.songs = Queue()
+        self.next = Event()
         self.channel = None
         self.voice_client = None
         self.is_looped = False
@@ -20,10 +21,10 @@ class music(commands.Cog):
     @tasks.loop(seconds=1)
     async def playersLoop(self):
         if song_queue.empty():
-            await asyncio.sleep(60)
-            if not self.voice_client.is_playing():
+            await async_sleep(60)
+            if not self.voice_client.is_playing() and song_queue.empty():
                 await self.voice_client.disconnect()
-                self.songs = asyncio.Queue()
+                self.songs = Queue()
                 self.playersLoop.stop()
         else:
             if not self.voice_client.is_playing():
@@ -31,7 +32,7 @@ class music(commands.Cog):
                 self.voice_client.play(song_to_play.source)
                 await self.channel.send("Playing " + song_to_play.title + ", requested by " + song_to_play.played_by)
             else:
-                await asyncio.sleep(1)
+                await async_sleep(1)
 
     @commands.command()
     async def join(self, ctx):
@@ -66,7 +67,7 @@ class music(commands.Cog):
         }
         vc = ctx.voice_client
 
-        with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
+        with YoutubeDL(YDL_OPTIONS) as ydl:
             info = ydl.extract_info(url, download=False)
             if 'entries' in info:
                 url2 = info['entries'][0]['formats'][7]['url']
@@ -75,7 +76,7 @@ class music(commands.Cog):
             else:
                 url2 = info['formats'][4]['url']
                 title = info['title']
-            source = discord.FFmpegPCMAudio(url2, **FFMPEG_OPTIONS)
+            source = FFmpegPCMAudio(url2, **FFMPEG_OPTIONS)
             new_song = song.song(source, title, ctx.author.name)
             if vc.is_playing():
                 await song_queue.put(new_song)

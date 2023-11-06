@@ -1,9 +1,6 @@
-import discord
-import asyncio
 from redis import Redis
 
 from discord.ext import commands
-from discord.ext import tasks
 
 class emote(commands.Cog):
     def __init__(self):

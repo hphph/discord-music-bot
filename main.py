@@ -1,12 +1,11 @@
-import discord
+from discord import Intents
 from os import getenv
 from dotenv import load_dotenv
 from music import music
 from emote import emote
-import asyncio
 from discord.ext import commands
 
-intents = discord.Intents.default()
+intents = Intents.default()
 intents.message_content = True
 intents.voice_states = True
 intents.message_content = True
