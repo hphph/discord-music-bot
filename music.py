@@ -70,18 +70,28 @@ class music(commands.Cog):
         with YoutubeDL(YDL_OPTIONS) as ydl:
             info = ydl.extract_info(url, download=False)
             if 'entries' in info:
-                url2 = info['entries'][0]['formats'][7]['url']
-                title = info['entries'][0]['title']
-                await ctx.send(title)
+                formats = info['entries'][0]['formats'] 
             else:
-                url2 = info['formats'][4]['url']
-                title = info['title']
+                formats = info['formats']
+
+            best_format = None
+            for f in formats:
+                if f['format_id'] == '251':
+                    best_format = f
+                    break
+                elif f['resolution'] == 'audio only':
+                    best_format = f
+
+            if best_format is None:
+                    best_format = formats[0]
+
+            url2 = best_format['url']
+            title = info['title']
+            await ctx.send(title)
+            
             source = FFmpegPCMAudio(url2, **FFMPEG_OPTIONS)
             new_song = song.song(source, title, ctx.author.name)
-            if vc.is_playing():
-                await song_queue.put(new_song)
-            else:
-                vc.play(source)
+            await song_queue.put(new_song)
 
     @commands.command()
     async def p(self, ctx, *, urlx):
