@@ -9,7 +9,6 @@ import song
 
 song_queue = Queue()
 
-
 class music(commands.Cog):
     def __init__(self):
         self.songs = Queue()
@@ -17,16 +16,19 @@ class music(commands.Cog):
         self.channel = None
         self.voice_client = None
         self.is_looped = False
+        self.retry_queue = 0
 
     @tasks.loop(seconds=1)
     async def playersLoop(self):
         if song_queue.empty():
-            await async_sleep(60)
-            if not self.voice_client.is_playing() and song_queue.empty():
+            self.retry_queue += 1
+            if not self.voice_client.is_playing() and song_queue.empty() and self.retry_queue > 60:
                 await self.voice_client.disconnect()
+                self.retry_queue = 0
                 self.songs = Queue()
                 self.playersLoop.stop()
         else:
+            self.retry_queue = 0
             if not self.voice_client.is_playing():
                 song_to_play = await song_queue.get()
                 self.voice_client.play(song_to_play.source)
