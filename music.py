@@ -31,7 +31,13 @@ class music(commands.Cog):
             self.retry_queue = 0
             if not self.voice_client.is_playing():
                 song_to_play = await song_queue.get()
-                self.voice_client.play(song_to_play.source)
+                try:
+                    self.voice_client.play(song_to_play.source)
+                except Exception as e:
+                    await self.channel.send(type(e))
+                    await self.channel.send(e.args)
+                    await self.channel.send(e)
+                    return
                 await self.channel.send("Playing " + song_to_play.title + ", requested by " + song_to_play.played_by)
             else:
                 await async_sleep(1)
