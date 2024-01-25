@@ -98,6 +98,7 @@ class music(commands.Cog):
             await ctx.send(title)
             try:
                 source = FFmpegPCMAudio(url2, **FFMPEG_OPTIONS)
+                await ctx.send(url2)
             except:
                 await ctx.send("FFMPEG error")
                 return
