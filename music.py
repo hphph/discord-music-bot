@@ -90,8 +90,11 @@ class music(commands.Cog):
             url2 = best_format['url']
             title = info['title']
             await ctx.send(title)
-            
-            source = FFmpegPCMAudio(url2, **FFMPEG_OPTIONS)
+            try:
+                source = FFmpegPCMAudio(url2, **FFMPEG_OPTIONS)
+            except:
+                await ctx.send("FFMPEG error")
+                return
             new_song = song.song(source, title, ctx.author.name)
             await song_queue.put(new_song)
 
