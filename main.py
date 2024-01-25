@@ -1,6 +1,5 @@
 from discord import Intents
 from os import getenv
-from dotenv import load_dotenv
 from music import music
 from emote import emote
 from discord.ext import commands
@@ -17,6 +16,6 @@ async def on_ready():
     await music.setup(client)
     await emote.setup(client)
 
-load_dotenv()
+
 discord_token = getenv('DISCORD_TOKEN')
 client.run(discord_token)
