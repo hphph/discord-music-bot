@@ -39,7 +39,6 @@ class music(commands.Cog):
                     await self.channel.send(e)
                     return
                 await self.channel.send("Playing " + song_to_play.title + ", requested by " + song_to_play.played_by)
-                await self.channel.send("Link: " + song_to_play.source)
             else:
                 await async_sleep(1)
 
