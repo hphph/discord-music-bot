@@ -30,6 +30,13 @@ class emote(commands.Cog):
             self.redis.set(tag, ctx.message.reference.resolved.content)
             await ctx.send("Zapisane  <:ZbychEZ:830032318466228296>👌")
     
+    @commands.command(aliases=["tagi"])
+    async def tags(self, ctx):
+        keys = ""
+        for key in self.redis.scan_iter("*"):
+            keys += key + "\n"
+        await ctx.send(keys)
+
     @commands.command(aliases=["removetag", "trm", "tagremove"])
     async def rmt(self, ctx, tag):
         content = self.redis.get(tag)

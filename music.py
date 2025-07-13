@@ -53,7 +53,7 @@ class music(commands.Cog):
     async def disconnect(self, ctx):
         await ctx.voice_client.disconnect()
 
-    @commands.command()
+    @commands.command(aliases=["p", "pl"])
     async def play(self, ctx, *, url):
         await self.join(ctx)
         FFMPEG_OPTIONS = {
@@ -95,19 +95,11 @@ class music(commands.Cog):
             new_song = song.song(source, title, ctx.author.name)
             await song_queue.put(new_song)
 
-    @commands.command()
-    async def p(self, ctx, *, urlx):
-        await self.play(ctx, url=urlx)
-
-    @commands.command()
+    @commands.command(aliases=["s", "fs"])
     async def skip(self, ctx):
         vc = ctx.voice_client
         if vc.is_playing():
             vc.stop()
-
-    @commands.command()
-    async def fs(self, ctx):
-        await self.skip(ctx)
 
     @commands.command()
     async def loop(self, ctx):
