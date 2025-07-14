@@ -6,6 +6,7 @@ from discord.ext import tasks
 from discord import FFmpegPCMAudio
 from yt_dlp import YoutubeDL
 import song
+import json
 
 song_queue = Queue()
 
@@ -20,9 +21,9 @@ class music(commands.Cog):
 
     @tasks.loop(seconds=1)
     async def playersLoop(self):
-        if song_queue.empty():
+        if song_queue.empty() and not self.voice_client.is_playing():
             self.retry_queue += 1
-            if not self.voice_client.is_playing() and song_queue.empty() and self.retry_queue > 60:
+            if self.retry_queue > 60:
                 await self.voice_client.disconnect()
                 self.retry_queue = 0
                 self.songs = Queue()
@@ -53,7 +54,7 @@ class music(commands.Cog):
     async def disconnect(self, ctx):
         await ctx.voice_client.disconnect()
 
-    @commands.command(aliases=["p", "pl"])
+    @commands.command(aliases=["p", "pl", "P"])
     async def play(self, ctx, *, url):
         await self.join(ctx)
         FFMPEG_OPTIONS = {
@@ -64,6 +65,10 @@ class music(commands.Cog):
         YDL_OPTIONS = {
             'format': "bestaudio",
             'default_search': 'auto',
+            'skip_download': True,
+            'quiet': True,
+            'cachedir': False,
+            'force_generic_extractor': False,
             'noplaylist': True,
             'geo_bypass': True
         }
